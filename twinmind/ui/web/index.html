@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TwinMind — 数字画像 · 处事智慧引擎</title>
+<style>
+:root{--bg:#0f1117;--card:#171a23;--card2:#1d2130;--fg:#e8eaf0;--dim:#8b90a0;--acc:#5b8cff;--acc2:#7c5bff;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;--border:#262b3d;--radius:14px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;min-height:100vh}
+.topbar{display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid var(--border);background:linear-gradient(90deg,#10131c,#141827)}
+.topbar .logo{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar .sub{color:var(--dim);font-size:12px}
+.tabs{display:flex;gap:4px;padding:0 28px;background:var(--bg);border-bottom:1px solid var(--border)}
+.tab{padding:12px 20px;cursor:pointer;color:var(--dim);font-size:14px;border-bottom:2px solid transparent;transition:.2s}
+.tab:hover{color:var(--fg)}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+.main{padding:24px 28px;max-width:1100px;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card h3{font-size:15px;margin-bottom:12px;color:var(--fg)}
+.card h3 .en{color:var(--dim);font-weight:400;font-size:12px;margin-left:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pill{display:inline-block;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:13px;margin:3px}
+.pill.acc{background:rgba(91,140,255,.12);border-color:rgba(91,140,255,.35);color:var(--acc)}
+.pill.ok{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--ok)}
+.pill.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:var(--warn)}
+.btn{background:linear-gradient(90deg,var(--acc),var(--acc2));border:none;color:#fff;padding:10px 22px;border-radius:10px;font-size:14px;cursor:pointer;transition:.2s;font-weight:600}
+.btn:hover{filter:brightness(1.15)}
+.btn.ghost{background:var(--card2);border:1px solid var(--border);color:var(--fg);font-weight:400}
+.btn.okbg{background:var(--ok);color:#06281c}
+.btn.badbg{background:var(--bad);color:#2a0808}
+.btn.sm{padding:6px 14px;font-size:13px}
+input,textarea,select{background:var(--card2);border:1px solid var(--border);color:var(--fg);border-radius:10px;padding:10px 14px;font-size:14px;width:100%;outline:none;font-family:inherit}
+input:focus,textarea:focus{border-color:var(--acc)}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-size:12px;color:var(--dim);margin:12px 0 6px}
+.mono{font-family:Consolas,monospace;font-size:13px}
+.stat{text-align:center;padding:10px}
+.stat .num{font-size:26px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .lbl{color:var(--dim);font-size:12px;margin-top:4px}
+.mode-select{display:flex;gap:10px;margin-top:8px}
+.mode-box{flex:1;border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.2s;background:var(--card2)}
+.mode-box:hover{border-color:var(--acc)}
+.mode-box.sel{border-color:var(--acc);background:rgba(91,140,255,.1)}
+.mode-box .t{font-weight:700;font-size:14px}
+.mode-box .d{font-size:12px;color:var(--dim);margin-top:6px}
+.advice-sec{border-left:3px solid var(--acc);padding-left:14px;margin:14px 0}
+.advice-sec h4{font-size:14px;color:var(--acc);margin-bottom:6px}
+.advice-sec .body{font-size:14px;line-height:1.8;color:var(--fg)}
+.wisdom-item{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;background:var(--card2)}
+.wisdom-item .src{font-size:12px;color:var(--dim)}
+.wisdom-item .title{font-weight:700;margin:4px 0}
+.wisdom-item .ess{font-size:13px;line-height:1.7;color:#c3c8d4}
+.wisdom-item .how{font-size:13px;color:var(--acc);margin-top:6px;line-height:1.6}
+.approve-item{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.risk-badge{font-size:11px;padding:2px 10px;border-radius:10px;background:rgba(251,191,36,.15);color:var(--warn);margin-right:8px}
+.risk-badge.r2{background:rgba(91,140,255,.15);color:var(--acc)}
+.risk-badge.r3{background:rgba(248,113,113,.15);color:var(--bad)}
+.empty{color:var(--dim);text-align:center;padding:30px;font-size:14px}
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.flow .step{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--dim)}
+.flow .step.done{color:var(--ok);border-color:rgba(52,211,153,.4)}
+.flow .arrow{color:var(--dim)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--card2);border-top-color:var(--acc);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2436;border:1px solid var(--border);padding:12px 24px;border-radius:12px;display:none;z-index:99;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+#toast.show{display:block}
+@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">🧠 TwinMind</div>
+  <div class="sub">数字画像 · 处事智慧引擎 — 越用越懂你，比你自己更懂该怎么做</div>
+</div>
+<div class="tabs">
+  <div class="tab active" data-p="profile">📊 我的画像</div>
+  <div class="tab" data-p="advisor">💡 高维顾问</div>
+  <div class="tab" data-p="record">📥 记录</div>
+  <div class="tab" data-p="wisdom">📜 人类智慧库</div>
+  <div class="tab" data-p="safety">🛡️ 授权与安全</div>
+</div>
+<div class="main">
+
+<!-- 画像 -->
+<div class="panel active" id="p-profile">
+  <div class="grid3" id="statRow"></div>
+  <div class="card"><h3>人物速写<span class="en">Digital Portrait</span></h3><div id="summary" class="empty">加载中…</div></div>
+  <div class="grid2">
+    <div class="card"><h3>领域<span class="en">Domains</span></h3><div id="domains"></div></div>
+    <div class="card"><h3>常用工具<span class="en">Tools</span></h3><div id="tools"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>处事原则（L3）<span class="en">Principles</span></h3><div id="principles"></div></div>
+    <div class="card"><h3>思路模式（L2）<span class="en">Patterns</span></h3><div id="patterns"></div></div>
+  </div>
+  <div class="card"><h3>表达偏好</h3><div id="prefs"></div></div>
+  <div class="card"><h3>经验记忆（三级抽象）<span class="en">Memory</span></h3><div id="memoryList"></div>
+    <div style="margin-top:12px"><button class="btn ghost sm" onclick="rebuildProfile()">🔄 重新构建画像</button></div>
+  </div>
+</div>
+
+<!-- 顾问 -->
+<div class="panel" id="p-advisor">
+  <div class="card">
+    <h3>问 TwinMind<span class="en">用全人类的智慧帮你解题</span></h3>
+    <label>你的问题（用大白话描述即可）</label>
+    <textarea id="askInput" placeholder="例如：我想推广我的开源项目，但不知道从哪开始；或者：最近团队效率低，怎么提升？"></textarea>
+    <div style="margin-top:12px;display:flex;gap:10px">
+      <button class="btn" onclick="doAdvise()">💡 获取高维建议</button>
+      <button class="btn ghost" onclick="demoAsk()">🎲 试一个示例问题</button>
+    </div>
+  </div>
+  <div id="adviceResult"></div>
+  <div class="card" id="adviceHistoryCard" style="display:none">
+    <h3>历史建议</h3><div id="adviceHistory"></div>
+  </div>
+</div>
+
+<!-- 记录 -->
+<div class="panel" id="p-record">
+  <div class="grid2">
+    <div class="card">
+      <h3>📝 写日记<span class="en">不会操作也能记录：今天做了什么、怎么做的</span></h3>
+      <textarea id="journalText" placeholder="今天我在……，我的做法是……，因为……"></textarea>
+      <div style="margin-top:12px"><button class="btn" onclick="saveJournal()">保存日记</button></div>
+    </div>
+    <div class="card">
+      <h3>🤖 导入 AI 会话<span class="en">Hermes / JSONL</span></h3>
+      <label>Hermes 最近会话（自动发现数据库）</label>
+      <button class="btn ghost" style="width:100%" onclick="importHermes()">导入 Hermes 最近 20 个会话</button>
+      <label>多模态文件（图片/音频/视频/文本）</label>
+      <div style="display:flex;gap:8px">
+        <input id="filePath" placeholder="输入文件完整路径，如 D:/work/note.png">
+        <button class="btn ghost sm" onclick="importFile()">导入</button>
+      </div>
+      <label>录屏采集（隐私提示：请先确认屏幕无敏感信息）</label>
+      <button class="btn ghost" style="width:100%" onclick="captureScreen()">📸 截取当前屏幕</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🧪 蒸馏<span class="en">把记录提炼成 做法→思路→原则 三级抽象</span></h3>
+    <div class="flow" id="pipelineFlow"></div>
+    <button class="btn" onclick="runDistill()">开始蒸馏（处理未提炼的记录）</button>
+  </div>
+  <div class="card"><h3>最近会话</h3><div id="sessionList" class="empty">加载中…</div></div>
+</div>
+
+<!-- 智慧库 -->
+<div class="panel" id="p-wisdom">
+  <div class="card">
+    <h3>时空矩阵 × 学科交叉<span class="en">横向比较不同文化，纵向比较古今未来</span></h3>
+    <div id="wisdomStats"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <input id="wisdomQ" placeholder="检索关键词，如：谈判 / 效率 / 风险" style="flex:2;min-width:200px">
+      <select id="wisdomCulture" style="flex:1"><option value="">全部文化</option><option>中国</option><option>美国</option><option>日本</option><option>英国</option><option>全球</option></select>
+      <select id="wisdomEra" style="flex:1"><option value="">全部时代</option><option>古代</option><option>近代</option><option>现代</option><option>未来</option></select>
+      <button class="btn sm" onclick="searchWisdom()">检索</button>
+    </div>
+  </div>
+  <div id="wisdomList"></div>
+</div>
+
+<!-- 安全 -->
+<div class="panel" id="p-safety">
+  <div class="card">
+    <h3>授权模式<span class="en">TwinMind 以你名义行动前，需要你授权</span></h3>
+    <div class="mode-select" id="modeSelect"></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>⏳ 待审批动作</h3><div id="approvals"></div>
+    </div>
+    <div class="card">
+      <h3>📜 审计日志<span class="en">一切动作留痕，可追溯</span></h3><div id="auditLog"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>⚙️ 配置<span class="en">LLM 接口（可选，不配置也能用本地引擎）</span></h3>
+    <label>Base URL（OpenAI 兼容，默认智谱免费）</label>
+    <input id="cfgUrl" placeholder="https://open.bigmodel.cn/api/paas/v4">
+    <label>API Key（仅存本机；也可用环境变量 TWINMIND_API_KEY）</label>
+    <input id="cfgKey" type="password" placeholder="sk-...">
+    <label>模型名</label>
+    <input id="cfgModel" placeholder="glm-4.7-flash">
+    <div style="margin-top:12px"><button class="btn" onclick="saveConfig()">保存配置</button></div>
+  </div>
+</div>
+
+</div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const api=async(p,o={})=>{const r=await fetch(p,{method:o.method||'GET',headers:{'Content-Type':'application/json'},body:o.body?JSON.stringify(o.body):undefined});return r.json()};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600)}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');$('#p-'+t.dataset.p).classList.add('active');
+  if(t.dataset.p==='profile')loadProfile();
+  if(t.dataset.p==='wisdom')loadWisdom();
+  if(t.dataset.p==='record')loadSessions();
+  if(t.dataset.p==='safety')loadSafety();
+});
+window.onload=()=>{loadStats();loadProfile();loadConfig();loadSessions();loadAdviceHistory();};
+
+async function loadStats(){
+  const s=await api('/api/stats');
+  $('#statRow').innerHTML=[
+    ['会话',s.sessions],['事件',s.events],['经验记忆',s.patterns],
+    ['智慧库',s.wisdom.total],['建议',s.advices]
+  ].map(([l,n])=>`<div class="stat"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join('');
+  const lv=s.pattern_levels||{};
+  $('#pipelineFlow').innerHTML=['L1做法',lv.L1||0,'L2思路',lv.L2||0,'L3原则',lv.L3||0]
+    .map((x,i)=>i%2?`<div class="step done">${x}</div>`:`<span style="color:var(--dim);font-size:12px">${x}</span>`).join('')+'<span class="arrow">→</span><div class="step done">画像进化中</div>';
+}
+async function loadProfile(){
+  const p=await api('/api/profile');
+  $('#summary').innerHTML=`<div style="font-size:15px;line-height:2">${esc(p.summary||'暂无画像，先去「记录」页导入一些会话吧')}</div>
+    <div style="margin-top:10px;color:var(--dim);font-size:12px">上次更新：${esc(p.updated_at||'')} ｜ 记忆 ${p.stats?.pattern_count||0} 条</div>`;
+  $('#domains').innerHTML=(p.domains||[]).map(d=>`<span class="pill acc">${esc(d)}</span>`).join('')||'<span class="empty">暂无</span>';
+  $('#tools').innerHTML=(p.tools||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join('')||'<span class="empty">暂无</span>';
+  $('#principles').innerHTML=(p.principles||[]).slice(0,6).map(x=>`<div style="margin-bottom:10px"><span class="pill ok">⭐ ${x.importance}</span> ${esc(x.content)}</div>`).join('')||'<span class="empty">暂无原则，先去记录+蒸馏</span>';
+  $('#patterns').innerHTML=(p.patterns||[]).slice(0,6).map(x=>`<div style="margin-bottom:10px"><span class="pill">${(x.tags||[]).slice(0,2).map(esc).join(' ')}</span> ${esc(x.content)}</div>`).join('')||'<span class="empty">暂无</span>';
+  $('#prefs').innerHTML=(p.preferences||[]).map(x=>`<span class="pill warn">${esc(x)}</span>`).join('')||'<span class="empty">暂无</span>';
+  const m=await api('/api/patterns?limit=30');
+  $('#memoryList').innerHTML=m.map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+    <span class="pill ${x.level===3?'ok':x.level===2?'acc':''}">L${x.level}</span> ${esc(x.content)}
+    <div style="color:var(--dim);font-size:11px;margin-top:4px">${(x.tags||[]).map(esc).join(' · ') || '无标签'} ｜ 重要度 ${x.importance}</div></div>`).join('')||'<span class="empty">暂无记忆，先去「记录」导入，再「蒸馏」</span>';
+}
+async function rebuildProfile(){await api('/api/profile/rebuild',{method:'POST'});toast('画像已重建');loadProfile();loadStats();}
+
+async function doAdvise(){
+  const q=$('#askInput').value.trim();if(!q){toast('请输入问题');return}
+  const res=$('#adviceResult');res.innerHTML='<div class="card"><span class="spin"></span>正在调用全人类智慧为你解题…（首次约10-60秒）</div>';
+  try{
+    const r=await api('/api/advise',{method:'POST',body:{question:q}});
+    res.innerHTML=renderAdvice(r);loadAdviceHistory();
+  }catch(e){res.innerHTML=`<div class="card" style="color:var(--bad)">调用失败：${esc(e.message||e)}</div>`}
+}
+function renderAdvice(r){
+  const fp=r.four_poles||{};
+  const evalHtml=(r.evaluation||[]).map(e=>`<div style="margin-bottom:8px">
+    <b>${esc(e.option)}</b> <span class="pill ${(e.score||0)>=80?'ok':(e.score||0)>=65?'acc':'warn'}">${e.score}分</span>
+    <div style="font-size:13px;color:var(--dim);margin-top:3px">👍 ${esc(e.pros)} ｜ 👎 ${esc(e.cons)}</div></div>`).join('');
+  return `<div class="card">
+    <h3>🎯 第一性原理：你的真正目标</h3><div class="body" style="font-size:15px;line-height:1.9">${esc(r.goal)}</div>
+    <div class="advice-sec"><h4>你的画像洞察</h4><div class="body">${esc(r.portrait_insight)}</div></div>
+    <div class="advice-sec" style="border-left-color:var(--ok)"><h4>第一性原理新方案（抛开旧做法，从本质重推）</h4><div class="body">${esc(r.first_principles_plan)}</div></div>
+    <div class="advice-sec" style="border-left-color:var(--acc2)"><h4>时空矩阵借鉴（横向文化 × 纵向古今）</h4>
+      ${(r.spacetime_matrix||[]).map(e=>`<div class="wisdom-item" style="margin:8px 0"><div class="src">${esc(e.source||'')} ｜ ${esc(e.culture||'')} · ${esc(e.era_type||'')}</div><div class="ess">${esc(e.essence||'')}</div><div class="how">借鉴：${esc(e.how_to_apply||'')}</div></div>`).join('')||'<div class="empty">暂无匹配</div>'}
+    </div>
+    <div class="advice-sec" style="border-left-color:var(--warn)"><h4>学科交叉（各专业方法论）</h4>
+      ${(r.cross_discipline||[]).map(e=>`<div style="margin-bottom:8px;font-size:14px"><b>${esc(e.discipline||'')}</b>：${esc(e.idea||'')}<div style="color:var(--dim);font-size:13px">→ ${esc(e.how_to_apply||'')}</div></div>`).join('')||'<div class="empty">暂无匹配</div>'}
+    </div>
+    ${fp.strike?`<div class="advice-sec" style="border-left-color:var(--bad)"><h4>四极一击 · 降维打击</h4>
+      <div class="body" style="font-size:13px">🔭 极宏观：${esc(fp.macro||'')}</div>
+      <div class="body" style="font-size:13px">🔬 极微观：${esc(fp.micro||'')}</div>
+      <div class="body" style="font-size:13px">⚡ 极端环境：${esc(fp.extreme||'')}</div>
+      <div class="body" style="font-size:13px">🌐 极交叉：${esc(fp.cross||'')}</div>
+      <div class="body" style="font-size:15px;margin-top:8px;color:var(--warn)">💥 一击：${esc(fp.strike||'')}</div></div>`:''}
+    ${evalHtml?`<div class="advice-sec" style="border-left-color:var(--ok)"><h4>方案评估</h4>${evalHtml}</div>`:''}
+    <div class="advice-sec"><h4>行动方案</h4><div class="body">${(r.action_plan||[]).map((s,i)=>`${i+1}. ${esc(s)}`).join('<br>')}</div></div>
+    <div class="advice-sec" style="border-left-color:var(--acc)"><h4>场景拓展（这个解法还能用在哪）</h4><div class="body">${esc(r.scenario_expansion)}</div></div>
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <button class="btn okbg sm" onclick="sendFeedback(true)">👍 很有帮助</button>
+      <button class="btn badbg sm" onclick="sendFeedback(false)">👎 不太有用</button>
+      <span style="color:var(--dim);font-size:12px;align-self:center">反馈会写回画像，让 TwinMind 越来越懂你</span>
+    </div>
+  </div>`;
+}
+async function sendFeedback(helpful){
+  await api('/api/advise/feedback',{method:'POST',body:{question:$('#askInput').value,helpful,comment:''}});
+  toast(helpful?'谢谢反馈，已记入进化信号':'收到，我会改进');
+}
+function demoAsk(){const qs=['我想推广我的开源项目，从哪开始最有性价比？','团队最近效率低，怎么提升？','要不要辞职创业？','如何说服别人接受我的方案？'];const used=qs[Math.floor(Math.random()*qs.length)];$('#askInput').value=used;doAdvise();}
+async function loadAdviceHistory(){
+  const s=await api('/api/sessions'); // placeholder
+}
+
+async function saveJournal(){
+  const t=$('#journalText').value.trim();if(!t){toast('写点内容吧');return}
+  await api('/api/record/journal',{method:'POST',body:{text:t}});$('#journalText').value='';toast('日记已保存 ✅');loadStats();loadSessions();
+}
+async function importHermes(){
+  const r=await api('/api/record/hermes',{method:'POST',body:{}});
+  toast(`导入 ${r.imported} 个 Hermes 会话（跳过 ${r.skipped||0}）`);loadStats();loadSessions();
+}
+async function importFile(){
+  const p=$('#filePath').value.trim();if(!p){toast('请输入路径');return}
+  const r=await api('/api/record/file',{method:'POST',body:{path:p}});
+  toast(r.note||'已导入');loadStats();loadSessions();
+}
+async function captureScreen(){
+  const r=await api('/api/record/screen',{method:'POST'});
+  toast(r.note||'已采集屏幕');loadStats();loadSessions();
+}
+async function runDistill(){
+  const r=await api('/api/distill',{method:'POST',body:{limit:50}});
+  toast(`蒸馏完成：处理 ${r.distilled} 个会话，新增 ${r.patterns_added} 条记忆`);loadStats();loadProfile();
+}
+async function loadSessions(){
+  const s=await api('/api/sessions?limit=15');
+  $('#sessionList').innerHTML=s.length?s.map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+    <b>${esc(x.title||'未命名')}</b> <span class="pill">${esc(x.source)}</span> <span style="color:var(--dim)">${x.event_count} 条事件</span></div>`).join(''):'<div class="empty">暂无记录，试试写日记或导入 Hermes 会话</div>';
+}
+
+async function loadWisdom(){
+  const w=await api('/api/wisdom');
+  $('#wisdomStats').innerHTML=`<div class="grid3">
+    <div class="stat"><div class="num">${w.total}</div><div class="lbl">智慧条目</div></div>
+    <div class="stat"><div class="num">${Object.keys(w.cultures||{}).length}</div><div class="lbl">文化/国家</div></div>
+    <div class="stat"><div class="num">${Object.keys(w.disciplines||{}).length}</div><div class="lbl">学科</div></div></div>
+    <div style="margin-top:10px"><span style="color:var(--dim);font-size:12px">时代分布：</span>${Object.entries(w.eras||{}).map(([k,v])=>`<span class="pill">${esc(k)} ${v}</span>`).join('')}</div>`;
+  searchWisdom();
+}
+async function searchWisdom(){
+  const q=$('#wisdomQ').value.trim(),c=$('#wisdomCulture').value,e=$('#wisdomEra').value;
+  const r=await api(`/api/wisdom/search?q=${encodeURIComponent(q)}&culture=${encodeURIComponent(c)}&era=${encodeURIComponent(e)}&limit=20`);
+  $('#wisdomList').innerHTML=r.map(x=>`<div class="wisdom-item">
+    <div class="src">${esc(x.source||'')} ｜ ${esc(x.culture||'')} · ${esc(x.era_type||'')} ｜ ${esc(x.discipline||'')}</div>
+    <div class="title">${esc(x.title||'')}</div>
+    <div class="ess">${esc(x.essence||'')}</div>
+    <div class="how">💡 借鉴：${esc(x.how_to_apply||'')}</div>
+    <div style="color:var(--dim);font-size:12px;margin-top:6px">适用：${esc(x.applicable_to||'')} ${x._score?` ｜ 相关度 ${x._score}`:''}</div>
+  </div>`).join('')||'<div class="empty">没有匹配条目，换个关键词试试</div>';
+}
+
+async function loadSafety(){
+  const cfg=await api('/api/config');
+  $('#cfgUrl').value=cfg.llm.base_url;$('#cfgModel').value=cfg.llm.model;
+  const modes=[['auto','全自动','R0/R1 直接执行，对外动作需批准','🤖'],['semi','半自动','本地写入也需批准，重要操作人确认','⚖️'],['manual','人工主导','所有动作都需你确认','🧑']];
+  $('#modeSelect').innerHTML=modes.map(([k,t,d,ic])=>`<div class="mode-box ${cfg.mode===k?'sel':''}" onclick="setMode('${k}')"><div class="t">${ic} ${t}</div><div class="d">${d}</div></div>`).join('');
+  const ap=await api('/api/approvals?status=pending');
+  $('#approvals').innerHTML=ap.length?ap.map(a=>`<div class="approve-item">
+    <span class="risk-badge ${a.risk}">${esc(a.risk)}</span><b>${esc(a.action)}</b>
+    <div class="mono" style="font-size:12px;color:var(--dim);margin:6px 0">${esc(JSON.stringify(a.params).slice(0,150))}</div>
+    <div style="display:flex;gap:8px"><button class="btn okbg sm" onclick="decide(${a.id},true)">✅ 批准</button><button class="btn badbg sm" onclick="decide(${a.id},false)">❌ 拒绝</button></div>
+  </div>`).join(''):'<div class="empty">没有待审批动作 🎉</div>';
+  const au=await api('/api/audit?limit=15');
+  $('#auditLog').innerHTML=au.map(a=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;font-family:Consolas,monospace">
+    ${esc(a.ts||'').slice(0,19)} <span class="pill">${esc(a.risk)}</span> ${esc(a.action)} <span style="color:${a.decision==='denied'?'var(--bad)':'var(--dim)'}">→ ${esc(a.decision)}</span> ${esc((a.note||'').slice(0,40))}</div>`).join('')||'<div class="empty">暂无审计记录</div>';
+}
+async function setMode(m){
+  await api('/api/mode',{method:'POST',body:{mode:m}});
+  toast('模式已切换');loadSafety();loadStats();
+}
+async function decide(id,ok){
+  await api('/api/approvals/decide',{method:'POST',body:{approval_id:id,approve:ok}});
+  toast(ok?'已批准 ✅':'已拒绝');loadSafety();
+}
+async function saveConfig(){
+  await api('/api/config',{method:'POST',body:{base_url:$('#cfgUrl').value,api_key:$('#cfgKey').value,model:$('#cfgModel').value}});
+  toast('配置已保存 ✅');loadSafety();
+}
+</script>
+</body>
+</html>

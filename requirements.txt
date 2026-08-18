@@ -1,0 +1,15 @@
+# TwinMind 核心依赖（最小编）
+# 核心引擎零第三方依赖（纯 stdlib），以下为可选增强
+
+# 桌面 GUI（可选，推荐）
+pywebview>=5.0
+
+# Web API（可选，桌面服务需要）
+fastapi>=0.110
+uvicorn>=0.29
+
+# 多模态：本地语音转文字（可选，不装则走云端或提示）
+# faster-whisper>=1.0
+
+# 测试
+pytest>=8.0

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "twinmind"
+version = "0.1.0"
+description = "TwinMind — 数字画像 · 处事智慧引擎：从你的行为提炼处事原则，用全人类智慧（时空矩阵×学科交叉）帮你站到更高维度解题。"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "姚万祥", email = "yaowanxiang@qut.edu.cn" }]
+keywords = ["digital-twin", "memory", "wisdom", "ai-agent", "portrait", "distillation"]
+
+[project.scripts]
+twinmind = "twinmind.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["twinmind*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
