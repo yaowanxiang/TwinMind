@@ -1,0 +1,64 @@
+name: Build Desktop Apps
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: TwinMind-Windows-x64.exe
+            pyinstaller_args: --onefile --windowed --name TwinMind-Windows-x64 --add-data "twinmind/ui/web;twinmind/ui/web" --add-data "twinmind/wisdom/data;twinmind/wisdom/data" --hidden-import uvicorn.logging --hidden-import uvicorn.loops.auto --hidden-import uvicorn.protocols.http.auto
+            path: dist/TwinMind-Windows-x64.exe
+            zip: false
+
+          - os: macos-latest
+            artifact: TwinMind-macOS.zip
+            pyinstaller_args: --windowed --name TwinMind-macOS --add-data "twinmind/ui/web:twinmind/ui/web" --add-data "twinmind/wisdom/data:twinmind/wisdom/data" --hidden-import uvicorn.logging --hidden-import uvicorn.loops.auto --hidden-import uvicorn.protocols.http.auto
+            path: dist/TwinMind-macOS.zip
+            zip: true
+
+          - os: ubuntu-latest
+            artifact: TwinMind-Linux-x86_64
+            pyinstaller_args: --onefile --windowed --name TwinMind-Linux-x86_64 --add-data "twinmind/ui/web:twinmind/ui/web" --add-data "twinmind/wisdom/data:twinmind/wisdom/data" --hidden-import uvicorn.logging --hidden-import uvicorn.loops.auto --hidden-import uvicorn.protocols.http.auto
+            path: dist/TwinMind-Linux-x86_64
+            zip: false
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build with PyInstaller
+        run: python -m PyInstaller --noconfirm ${{ matrix.pyinstaller_args }} desktop_launcher.py
+
+      - name: Package macOS app
+        if: matrix.zip
+        run: cd dist && zip -r TwinMind-macOS.zip TwinMind-macOS.app && cd ..
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.path }}
+
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.path }}
+          fail_on_unmatched_files: false

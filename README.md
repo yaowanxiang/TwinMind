@@ -1,6 +1,8 @@
 # 🧠 TwinMind — 数字画像 · 处事智慧引擎
 
 > **格物致知 · 知行合一 —— 越用越懂你，比你自己更懂该怎么做**
+>
+> 🌐 **中英双语**：README 中文版 | [English README](README_EN.md) | [CONTRIBUTING 中文](CONTRIBUTING.md) | [CONTRIBUTING English](CONTRIBUTING_EN.md)
 
 TwinMind 是一款面向**每一个普通人**的开源 AI 引擎：它默默记录你的言行（AI 会话、日记、录屏、录音、图片），提炼出你的**处事原则**（数字画像），然后用**全人类的智慧**——古今中外、跨学科——帮你站到更高维度解决问题。
 
@@ -38,6 +40,16 @@ twinmind ask "如何高效推广我的开源项目"
 # 5. 打开可视化桌面（推荐！傻瓜化界面）
 twinmind server --desktop
 ```
+
+## ⬇️ 桌面客户端下载（v0.2.0，三平台自动构建）
+
+| 平台 | 下载 | 构建方式 |
+|---|---|---|
+| **Windows x64** | [TwinMind-Windows-x64.exe](https://github.com/yaowanxiang/TwinMind/releases/latest) | ✅ GitHub Actions 自动构建 |
+| **macOS (Intel/Apple Silicon)** | [TwinMind-macOS.zip](https://github.com/yaowanxiang/TwinMind/releases/latest) | ✅ GitHub Actions 自动构建 |
+| **Linux x86_64** | [TwinMind-Linux-x86_64](https://github.com/yaowanxiang/TwinMind/releases/latest) | ✅ GitHub Actions 自动构建 |
+
+> 三平台安装包由 **GitHub Actions**（`.github/workflows/build.yml`）自动构建：每次推送 `v*` 标签，自动在 Windows/macOS/Linux 三个系统上打包并上传到 Release。
 
 ## 🖥️ 桌面界面
 
