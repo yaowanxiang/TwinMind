@@ -164,4 +164,4 @@ MIT License — free to use, modify, and commercialize.
 
 ---
 
-*[中文版 README](README.md) | [English README](README_EN.md)*
+*[中文版 README](README.md) | [English README](README_EN.md) | [English Docs Index](docs/EN/README.md)*

@@ -2,7 +2,11 @@
 
 > **格物致知 · 知行合一 —— 越用越懂你，比你自己更懂该怎么做**
 >
-> 🌐 **中英双语**：README 中文版 | [English README](README_EN.md) | [CONTRIBUTING 中文](CONTRIBUTING.md) | [CONTRIBUTING English](CONTRIBUTING_EN.md)
+> 🌐 **中英双语文档**（所有介绍文件双语版）：
+> - 项目介绍：[README.md](README.md) · [README_EN.md](README_EN.md)
+> - 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md) · [CONTRIBUTING_EN.md](CONTRIBUTING_EN.md)
+> - 技术架构：[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/EN/ARCHITECTURE_EN.md](docs/EN/ARCHITECTURE_EN.md)
+> - 推广文章：[docs/promotion/](docs/promotion/)（中文4篇+个人主页版） · [docs/EN/](docs/EN/)（英文6篇+索引）
 
 TwinMind 是一款面向**每一个普通人**的开源 AI 引擎：它默默记录你的言行（AI 会话、日记、录屏、录音、图片），提炼出你的**处事原则**（数字画像），然后用**全人类的智慧**——古今中外、跨学科——帮你站到更高维度解决问题。
 
